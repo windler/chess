@@ -200,6 +200,24 @@ func (g *Game) Comments() [][]string {
 	return append([][]string(nil), g.comments...)
 }
 
+//AddComment adds a comment for a move.
+func (g *Game) AddComment(move *Move, comment string) {
+	if len(g.comments) == 0 {
+		g.comments = [][]string{}
+	}
+	for index, m := range g.moves {
+		if len(g.comments[index]) == 0 {
+			g.comments[index] = []string{}
+		}
+
+		if m == move {
+			comments := g.comments[index]
+			comments = append(comments, comment)
+			g.comments[index] = comments
+		}
+	}
+}
+
 // TagPairs returns the game's tag pairs.
 func (g *Game) TagPairs() []*TagPair {
 	return append([]*TagPair(nil), g.tagPairs...)
