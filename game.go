@@ -206,7 +206,7 @@ func (g *Game) AddComment(move *Move, comment string) {
 		g.comments = [][]string{}
 	}
 	for index, m := range g.moves {
-		if len(g.comments[index]) == 0 {
+		if len(g.comments) < index+1 {
 			g.comments[index] = []string{}
 		}
 
