@@ -168,6 +168,22 @@ func (g *Game) Move(m *Move) error {
 	return nil
 }
 
+// UndoMoves undos the last n moves
+func (g *Game) UndoMoves(n int) error {
+	if len(g.moves) < n {
+		return fmt.Errorf("cannot undo %d moves", n)
+	}
+
+	if len(g.comments) == len(g.moves) {
+		g.comments = g.comments[:len(g.comments)-n]
+	}
+	g.moves = g.moves[:len(g.moves)-n]
+	g.positions = g.positions[:len(g.positions)-n]
+	g.pos = g.positions[len(g.positions)-1]
+	g.updatePosition()
+	return nil
+}
+
 // MoveStr decodes the given string in game's notation
 // and calls the Move function.  An error is returned if
 // the move can't be decoded or the move is invalid.
