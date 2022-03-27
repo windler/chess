@@ -15,7 +15,7 @@ import (
 // SVG writes the board SVG representation into the writer.
 // An error is returned if there is there is an error writing data.
 // SVG also takes options which can customize the image output.
-func SVG(w io.Writer, b *chess.Board, opts ...func(*encoder)) error {
+func SVG(w io.Writer, b *chess.Board, opts ...func(*Encoder)) error {
 	e := new(w, opts)
 	return e.EncodeSVG(b)
 }
@@ -23,8 +23,8 @@ func SVG(w io.Writer, b *chess.Board, opts ...func(*encoder)) error {
 // SquareColors is designed to be used as an optional argument
 // to the SVG function.  It changes the default light and
 // dark square colors to the colors given.
-func SquareColors(light, dark color.Color) func(*encoder) {
-	return func(e *encoder) {
+func SquareColors(light, dark color.Color) func(*Encoder) {
+	return func(e *Encoder) {
 		e.light = light
 		e.dark = dark
 	}
@@ -34,8 +34,8 @@ func SquareColors(light, dark color.Color) func(*encoder) {
 // to the SVG function.  It marks the given squares with the
 // color.  A possible usage includes marking squares of the
 // previous move.
-func MarkSquares(c color.Color, sqs ...chess.Square) func(*encoder) {
-	return func(e *encoder) {
+func MarkSquares(c color.Color, sqs ...chess.Square) func(*Encoder) {
+	return func(e *Encoder) {
 		for _, sq := range sqs {
 			e.marks[sq] = c
 		}
@@ -43,18 +43,18 @@ func MarkSquares(c color.Color, sqs ...chess.Square) func(*encoder) {
 }
 
 // A Encoder encodes chess boards into images.
-type encoder struct {
+type Encoder struct {
 	w     io.Writer
 	light color.Color
 	dark  color.Color
 	marks map[chess.Square]color.Color
 }
 
-// New returns an encoder that writes to the given writer.
+// New returns an Encoder that writes to the given writer.
 // New also takes options which can customize the image
 // output.
-func new(w io.Writer, options []func(*encoder)) *encoder {
-	e := &encoder{
+func new(w io.Writer, options []func(*Encoder)) *Encoder {
+	e := &Encoder{
 		w:     w,
 		light: color.RGBA{235, 209, 166, 1},
 		dark:  color.RGBA{165, 117, 81, 1},
@@ -81,7 +81,7 @@ var (
 // EncodeSVG writes the board SVG representation into
 // the Encoder's writer.  An error is returned if there
 // is there is an error writing data.
-func (e *encoder) EncodeSVG(b *chess.Board) error {
+func (e *Encoder) EncodeSVG(b *chess.Board) error {
 	boardMap := b.SquareMap()
 	canvas := svg.New(e.w)
 	canvas.Start(boardWidth, boardHeight)
@@ -121,7 +121,7 @@ func (e *encoder) EncodeSVG(b *chess.Board) error {
 	return nil
 }
 
-func (e *encoder) colorForSquare(sq chess.Square) color.Color {
+func (e *Encoder) colorForSquare(sq chess.Square) color.Color {
 	sqSum := int(sq.File()) + int(sq.Rank())
 	if sqSum%2 == 0 {
 		return e.dark
@@ -129,7 +129,7 @@ func (e *encoder) colorForSquare(sq chess.Square) color.Color {
 	return e.light
 }
 
-func (e *encoder) colorForText(sq chess.Square) color.Color {
+func (e *Encoder) colorForText(sq chess.Square) color.Color {
 	sqSum := int(sq.File()) + int(sq.Rank())
 	if sqSum%2 == 0 {
 		return e.light
