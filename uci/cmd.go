@@ -293,10 +293,9 @@ func (CmdGo) ProcessResponse(e *Engine) error {
 			results.BestMove = bestMove
 			if len(parts) >= 4 {
 				ponderMove, err := chess.UCINotation{}.Decode(nil, parts[3])
-				if err != nil {
-					return err
+				if err == nil {
+					results.Ponder = ponderMove
 				}
-				results.Ponder = ponderMove
 			}
 			break
 		}
